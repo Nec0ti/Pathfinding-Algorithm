@@ -1,2 +1,4 @@
 # Pathfinding-Algorithm
-It's basically pathfinding algorithm
+
+
+A pathfinder algorithm (A*)
