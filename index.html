@@ -80,6 +80,19 @@
 
         function handleMouseUp() {
             isDrawing = false;
+
+            // Call findPath function and draw the path
+            const path = findPath();
+            if (path) {
+                ctx.beginPath();
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 3;
+                ctx.moveTo(path[0].x + gridSize / 2, path[0].y + gridSize / 2);
+                for (let i = 1; i < path.length; i++) {
+                    ctx.lineTo(path[i].x + gridSize / 2, path[i].y + gridSize / 2);
+                }
+                ctx.stroke();
+            }
         }
 
         function findPath() {
@@ -171,19 +184,6 @@
         canvas.addEventListener('mouseup', handleMouseUp);
 
         drawGrid();
-
-        // Call findPath function and draw the path
-        const path = findPath();
-        if (path) {
-            ctx.beginPath();
-            ctx.strokeStyle = 'blue';
-            ctx.lineWidth = 3;
-            ctx.moveTo(path[0].x + gridSize / 2, path[0].y + gridSize / 2);
-            for (let i = 1; i < path.length; i++) {
-                ctx.lineTo(path[i].x + gridSize / 2, path[i].y + gridSize / 2);
-            }
-            ctx.stroke();
-        }
     </script>
 </body>
 </html>
