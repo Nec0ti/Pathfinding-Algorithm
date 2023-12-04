@@ -25,6 +25,7 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const gridSize = 20;
+        let isDrawing = false;
 
         // Initialize grid
         const grid = Array.from({ length: canvas.height / gridSize }, () =>
@@ -56,6 +57,13 @@
         }
 
         function handleMouseDown(event) {
+            isDrawing = true;
+            handleMouseMove(event);
+        }
+
+        function handleMouseMove(event) {
+            if (!isDrawing) return;
+
             const rect = canvas.getBoundingClientRect();
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
@@ -65,11 +73,13 @@
 
             if (grid[row][col] === 0) {
                 grid[row][col] = 1;
-            } else {
-                grid[row][col] = 0;
             }
 
             drawGrid();
+        }
+
+        function handleMouseUp() {
+            isDrawing = false;
         }
 
         function findPath() {
@@ -157,6 +167,8 @@
         }
 
         canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
 
         drawGrid();
 
