@@ -76,24 +76,11 @@
             }
 
             drawGrid();
-            findPath();
+            findPath(); // Yolu çiz
         }
 
         function handleMouseUp() {
             isDrawing = false;
-
-            // Call findPath function and draw the path
-            const path = findPath();
-            if (path) {
-                ctx.beginPath();
-                ctx.strokeStyle = 'blue';
-                ctx.lineWidth = 3;
-                ctx.moveTo(path[0].x + gridSize / 2, path[0].y + gridSize / 2);
-                for (let i = 1; i < path.length; i++) {
-                    ctx.lineTo(path[i].x + gridSize / 2, path[i].y + gridSize / 2);
-                }
-                ctx.stroke();
-            }
         }
 
         function findPath() {
@@ -131,15 +118,16 @@
                         path.push(currentNode.position);
                         currentNode = cameFrom[`${currentNode.position.x}-${currentNode.position.y}`];
                     }
-                    return path.reverse();
+                    drawPath(path.reverse()); // Yolu çiz
+                    return;
                 }
 
                 // Get neighbors
                 const neighbors = getNeighbors(currentNode.position);
                 for (const neighbor of neighbors) {
                     if (
-                        neighbor.x < 0 || neighbor.x >= canvas.width / gridSize ||
-                        neighbor.y < 0 || neighbor.y >= canvas.height / gridSize ||
+                        neighbor.x < 0 || neighbor.x >= grid[0].length ||
+                        neighbor.y < 0 || neighbor.y >= grid.length ||
                         closedSet.some(node => node.position.x === neighbor.x && node.position.y === neighbor.y) ||
                         grid[neighbor.y][neighbor.x] === 1
                     ) {
@@ -166,16 +154,27 @@
                 }
             }
 
-            return null; // No path found
+            // No path found
+        }
+
+        function drawPath(path) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 3;
+            ctx.moveTo(path[0].x + gridSize / 2, path[0].y + gridSize / 2);
+            for (let i = 1; i < path.length; i++) {
+                ctx.lineTo(path[i].x + gridSize / 2, path[i].y + gridSize / 2);
+            }
+            ctx.stroke();
         }
 
         function getNeighbors(position) {
             const neighbors = [];
 
             if (position.x > 0) neighbors.push({ x: position.x - 1, y: position.y });
-            if (position.x < canvas.width / gridSize - 1) neighbors.push({ x: position.x + 1, y: position.y });
+            if (position.x < grid[0].length - 1) neighbors.push({ x: position.x + 1, y: position.y });
             if (position.y > 0) neighbors.push({ x: position.x, y: position.y - 1 });
-            if (position.y < canvas.height / gridSize - 1) neighbors.push({ x: position.x, y: position.y + 1 });
+            if (position.y < grid.length - 1) neighbors.push({ x: position.x, y: position.y + 1 });
 
             return neighbors;
         }
