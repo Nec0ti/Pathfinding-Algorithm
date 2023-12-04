@@ -76,7 +76,7 @@
             }
 
             drawGrid();
-            findPath(); // Yolu çiz
+            findPath();
         }
 
         function handleMouseUp() {
@@ -118,7 +118,7 @@
                         path.push(currentNode.position);
                         currentNode = cameFrom[`${currentNode.position.x}-${currentNode.position.y}`];
                     }
-                    drawPath(path.reverse()); // Yolu çiz
+                    drawPath(path.reverse());
                     return;
                 }
 
