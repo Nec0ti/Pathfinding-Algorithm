@@ -162,11 +162,14 @@
             ctx.strokeStyle = 'blue';
             ctx.lineWidth = 3;
             ctx.moveTo(path[0].x + gridSize / 2, path[0].y + gridSize / 2);
+
             for (let i = 1; i < path.length; i++) {
-                ctx.lineTo(path[i].x + gridSize / 2, path[i].y + gridSize / 2);
+                ctx.lineTo(path[i].x * gridSize + gridSize / 2, path[i].y * gridSize + gridSize / 2);
             }
+
             ctx.stroke();
         }
+
 
         function getNeighbors(position) {
             const neighbors = [];
