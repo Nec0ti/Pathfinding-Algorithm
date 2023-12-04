@@ -71,7 +71,7 @@
             const col = Math.floor(mouseX / gridSize);
             const row = Math.floor(mouseY / gridSize);
 
-            if (grid[row][col] === 0) {
+            if (grid[row] && grid[row][col] === 0) {
                 grid[row][col] = 1;
             }
 
@@ -136,8 +136,13 @@
                 // Get neighbors
                 const neighbors = getNeighbors(currentNode.position);
                 for (const neighbor of neighbors) {
-                    if (closedSet.some(node => node.position.x === neighbor.x && node.position.y === neighbor.y) || grid[neighbor.y][neighbor.x] === 1) {
-                        continue; // Ignore walls or nodes in closedSet
+                    if (
+                        neighbor.x < 0 || neighbor.x >= canvas.width / gridSize ||
+                        neighbor.y < 0 || neighbor.y >= canvas.height / gridSize ||
+                        closedSet.some(node => node.position.x === neighbor.x && node.position.y === neighbor.y) ||
+                        grid[neighbor.y][neighbor.x] === 1
+                    ) {
+                        continue; // Ignore walls or nodes outside the grid
                     }
 
                     const tentativeG = currentNode.g + 1; // Assuming each step has a cost of 1
@@ -167,9 +172,9 @@
             const neighbors = [];
 
             if (position.x > 0) neighbors.push({ x: position.x - 1, y: position.y });
-            if (position.x < canvas.width - gridSize) neighbors.push({ x: position.x + 1, y: position.y });
+            if (position.x < canvas.width / gridSize - 1) neighbors.push({ x: position.x + 1, y: position.y });
             if (position.y > 0) neighbors.push({ x: position.x, y: position.y - 1 });
-            if (position.y < canvas.height - gridSize) neighbors.push({ x: position.x, y: position.y + 1 });
+            if (position.y < canvas.height / gridSize - 1) neighbors.push({ x: position.x, y: position.y + 1 });
 
             return neighbors;
         }
