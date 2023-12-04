@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pathfinding with Drawing</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 20;
+
+        // Initialize grid
+        const grid = Array.from({ length: canvas.height / gridSize }, () =>
+            Array(canvas.width / gridSize).fill(0)
+        );
+
+        let start = { x: 0, y: 0 };
+        let end = { x: canvas.width - gridSize, y: canvas.height - gridSize };
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            for (let row = 0; row < grid.length; row++) {
+                for (let col = 0; col < grid[row].length; col++) {
+                    if (grid[row][col] === 1) {
+                        ctx.fillStyle = '#000';
+                        ctx.fillRect(col * gridSize, row * gridSize, gridSize, gridSize);
+                    }
+                }
+            }
+
+            // Draw start and end points
+            ctx.fillStyle = 'green';
+            ctx.fillRect(start.x, start.y, gridSize, gridSize);
+
+            ctx.fillStyle = 'red';
+            ctx.fillRect(end.x, end.y, gridSize, gridSize);
+        }
+
+        function handleMouseDown(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            const col = Math.floor(mouseX / gridSize);
+            const row = Math.floor(mouseY / gridSize);
+
+            if (grid[row][col] === 0) {
+                grid[row][col] = 1;
+            } else {
+                grid[row][col] = 0;
+            }
+
+            drawGrid();
+        }
+
+        function findPath() {
+            const openSet = [];
+            const closedSet = [];
+            const cameFrom = {};
+
+            // Initialize starting point
+            const startNode = {
+                position: { x: start.x, y: start.y },
+                g: 0,
+                h: heuristic(start, end),
+                f: heuristic(start, end)
+            };
+
+            openSet.push(startNode);
+
+            while (openSet.length > 0) {
+                // Find node with the lowest f cost in openSet
+                let currentNode = openSet[0];
+                for (let i = 1; i < openSet.length; i++) {
+                    if (openSet[i].f < currentNode.f) {
+                        currentNode = openSet[i];
+                    }
+                }
+
+                // Remove currentNode from openSet
+                openSet.splice(openSet.indexOf(currentNode), 1);
+                closedSet.push(currentNode);
+
+                if (currentNode.position.x === end.x && currentNode.position.y === end.y) {
+                    // Reached the end, reconstruct path
+                    let path = [];
+                    while (currentNode) {
+                        path.push(currentNode.position);
+                        currentNode = cameFrom[`${currentNode.position.x}-${currentNode.position.y}`];
+                    }
+                    return path.reverse();
+                }
+
+                // Get neighbors
+                const neighbors = getNeighbors(currentNode.position);
+                for (const neighbor of neighbors) {
+                    if (closedSet.some(node => node.position.x === neighbor.x && node.position.y === neighbor.y) || grid[neighbor.y][neighbor.x] === 1) {
+                        continue; // Ignore walls or nodes in closedSet
+                    }
+
+                    const tentativeG = currentNode.g + 1; // Assuming each step has a cost of 1
+
+                    if (!openSet.some(node => node.position.x === neighbor.x && node.position.y === neighbor.y) || tentativeG < currentNode.g) {
+                        // Discovered a better path
+                        cameFrom[`${neighbor.x}-${neighbor.y}`] = currentNode;
+
+                        const neighborNode = {
+                            position: { x: neighbor.x, y: neighbor.y },
+                            g: tentativeG,
+                            h: heuristic(neighbor, end),
+                            f: tentativeG + heuristic(neighbor, end)
+                        };
+
+                        if (!openSet.some(node => node.position.x === neighbor.x && node.position.y === neighbor.y)) {
+                            openSet.push(neighborNode);
+                        }
+                    }
+                }
+            }
+
+            return null; // No path found
+        }
+
+        function getNeighbors(position) {
+            const neighbors = [];
+
+            if (position.x > 0) neighbors.push({ x: position.x - 1, y: position.y });
+            if (position.x < canvas.width - gridSize) neighbors.push({ x: position.x + 1, y: position.y });
+            if (position.y > 0) neighbors.push({ x: position.x, y: position.y - 1 });
+            if (position.y < canvas.height - gridSize) neighbors.push({ x: position.x, y: position.y + 1 });
+
+            return neighbors;
+        }
+
+        function heuristic(a, b) {
+            // Simple Euclidean distance as the heuristic
+            return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+        }
+
+        canvas.addEventListener('mousedown', handleMouseDown);
+
+        drawGrid();
+
+        // Call findPath function and draw the path
+        const path = findPath();
+        if (path) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 3;
+            ctx.moveTo(path[0].x + gridSize / 2, path[0].y + gridSize / 2);
+            for (let i = 1; i < path.length; i++) {
+                ctx.lineTo(path[i].x + gridSize / 2, path[i].y + gridSize / 2);
+            }
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>
