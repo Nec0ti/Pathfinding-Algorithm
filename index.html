@@ -97,15 +97,17 @@
     }
 
     function drawPath(path) {
-      ctx.beginPath();
-      ctx.strokeStyle = 'yellow';
+      ctx.strokeStyle = 'blue'; 
       ctx.lineWidth = 3;
 
-      for (const node of path) {
-        ctx.lineTo(node.x * gridSize + gridSize / 2, node.y * gridSize + gridSize / 2);
+      for (let i = 0; i < path.length - 1; i++) {
+        const current = path[i];
+        const next = path[i + 1];
+        ctx.beginPath();
+        ctx.moveTo(current.x * gridSize + gridSize / 2, current.y * gridSize + gridSize / 2);
+        ctx.lineTo(next.x * gridSize + gridSize / 2, next.y * gridSize + gridSize / 2);
+        ctx.stroke();
       }
-
-      ctx.stroke();
     }
 
     function drawGrid() {
