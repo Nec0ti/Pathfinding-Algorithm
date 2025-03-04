@@ -1,0 +1,62 @@
+:root {
+    --bg-color: #222;
+    --text-color: #eee;
+    --grid-color: #333;
+    --start-color: green;
+    --end-color: red;
+    --wall-color: #555;
+    --path-color: lightblue;
+  }
+  
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  canvas {
+    border: 1px solid var(--grid-color);
+    margin-bottom: 10px;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  
+  .controls label {
+    font-size: 0.9em;
+  }
+  
+  button {
+    background-color: #444;
+    color: var(--text-color);
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  button:hover {
+    background-color: #555;
+  }
+  
+  .light-mode {
+    --bg-color: #fff;
+    --text-color: #333;
+    --grid-color: #ddd;
+    --wall-color: #ccc;
+  }
